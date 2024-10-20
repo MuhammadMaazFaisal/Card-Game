@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Card Game</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --primary-color: #58a6ff;
+            --secondary-color: #1f6feb;
+            --accent-color: #f78166;
+            --text-color: #c9d1d9;
+            --card-width: 50px;
+            --card-height: 70px;
+            --border-radius: 8px;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #161b22;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+        }
+
+        .btn-outline-light {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-light:hover {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+        }
+
+        /* Buttons */
+        .btn-custom {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: #ffffff;
+            border: none;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            font-size: 0.9em;
+            border-radius: var(--border-radius);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-custom::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2), transparent 70%);
+            transform: translateX(-50%) translateY(-50%) scale(0);
+            opacity: 0;
+            transition: transform 0.5s, opacity 0.5s;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(88, 166, 255, 0.3);
+        }
+
+        .btn-custom:hover::after {
+            transform: translateX(-50%) translateY(-50%) scale(1);
+            opacity: 1;
+        }
+
+        /* Left Screen */
+        #left-screen {
+            height: calc(100vh - 56px);
+            padding: 10px;
+            overflow-y: hidden;
+        }
+
+        /* Card Placeholder */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(13, var(--card-width));
+            grid-gap: 5px;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Card Placeholder */
+        .card-placeholder {
+            width: var(--card-width);
+            height: var(--card-height);
+            background-image: url('https://i.imgur.com/6Qe5Cfj.png');
+            border-radius: var(--border-radius);
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            overflow: hidden;
+            background-size: contain;
+            /* Changed from cover to contain */
+            background-position: center;
+            box-shadow: 0 4px 15px rgba(88, 166, 255, 0.3);
+            border: 1px solid var(--primary-color);
+            padding: 3px;
+            /* Added padding */
+            box-sizing: border-box;
+            /* Adjusted box sizing */
+        }
+
+
+        .card-placeholder:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(88, 166, 255, 0.2);
+        }
+
+        .card-placeholder.collected {
+            background-color: white;
+        }
+
+        /* Big Card Display */
+        #big-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 280px;
+            transform: translate(-50%, -50%);
+            background-size: contain;
+            /* Changed from cover to contain */
+            background-position: center;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 20px rgba(88, 166, 255, 0.5);
+            z-index: 1000;
+            display: none;
+            background-color: #ffffff;
+            /* White background */
+            padding: 10px;
+            /* Added padding */
+            box-sizing: border-box;
+            /* Adjusted box sizing */
+        }
+
+        /* Separator */
+        .separator {
+            border-left: 1px solid #30363d;
+            height: calc(100vh - 56px);
+        }
+
+        /* Modals */
+        .modal-content {
+            background-color: #161b22;
+            color: var(--text-color);
+            border: none;
+            border-radius: var(--border-radius);
+        }
+
+        .form-control {
+            background-color: #0d1117;
+            color: var(--text-color);
+            border: 1px solid #30363d;
+            border-radius: 6px;
+        }
+
+        .form-control:focus {
+            background-color: #161b22;
+            border-color: var(--primary-color);
+            box-shadow: none;
+        }
+
+        .form-label,
+        .form-text {
+            color: #8b949e;
+        }
+
+        /* Links */
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: repeat(9, var(--card-width));
+                grid-gap: 5px;
+            }
+
+            .btn-custom {
+                font-size: 0.8em;
+                padding: 6px;
+            }
+
+            .card-placeholder {
+                width: 40px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="fas fa-gamepad"></i> Card Game</a>
+            <div class="d-flex">
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal"><i
+                        class="fas fa-sign-in-alt"></i> Login</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left Screen -->
+            <div class="col-md-8" id="left-screen">
+                <div class="card-grid">
+                    <!-- 52 Card Placeholders -->
+                    <script>
+                        const suits = ['clubs', 'diamonds', 'hearts', 'spades'];
+                        const values = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
+                        let cardIndex = 1;
+                        for (let suit of suits) {
+                            for (let value of values) {
+                                document.write(`
+                                    <div class="card-placeholder" id="placeholder-${value}-of-${suit}">
+                                    </div>
+                                `);
+                                cardIndex++;
+                            }
+                        }
+                    </script>
+                </div>
+            </div>
+            <!-- Separator -->
+            <div class="col-md-1 d-none d-md-block p-0">
+                <div class="separator"></div>
+            </div>
+            <!-- Right Screen -->
+            <div class="col-md-3 d-flex flex-column align-items-center justify-content-center" id="right-screen">
+                <button class="btn btn-custom" id="random-card-btn"><i class="fas fa-magic"></i> Draw Card</button>
+                <p class="mt-2">Remaining Free Cards: <span id="remaining-free">10</span></p>
+                <button class="btn btn-custom" id="buy-card-btn"><i class="fas fa-shopping-cart"></i> Buy Cards</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Big Card Display -->
+    <div id="big-card"></div>
+
+    <!-- Login Modal -->
+    <!-- Include the same modal code as before -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <!-- Modal content here -->
+        <!-- ... -->
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <!-- Modal content here -->
+        <!-- ... -->
+    </div>
+
+    <!-- Bootstrap JS and Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <!-- Custom Script -->
+    <script>
+        let freeCards = 10;
+        let collectedCards = [];
+
+        let allCards = [];
+
+        // Generate all card names
+        for (let suit of suits) {
+            for (let value of values) {
+                allCards.push({ suit: suit, value: value });
+            }
+        }
+
+        function getRandomCard() {
+            if (freeCards > 0) {
+                freeCards--;
+                document.getElementById('remaining-free').innerText = freeCards;
+            } else {
+                alert('No free cards left! Please buy more.');
+                return;
+            }
+
+            // Select a random card without checking if it's already collected
+            let cardObj = allCards[Math.floor(Math.random() * allCards.length)];
+
+            const cardName = `${cardObj.value}_of_${cardObj.suit}`;
+            const cardId = `placeholder-${cardObj.value}-of-${cardObj.suit}`;
+
+            // Show the big card in the center
+            const bigCard = document.getElementById('big-card');
+            bigCard.style.backgroundImage = `url('https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/${cardName}.png')`;
+            bigCard.style.display = 'block';
+            bigCard.style.backgroundColor = '#ffffff'; // Set background color to white
+
+            // Get the position of the placeholder
+            const placeholder = document.getElementById(cardId);
+            const placeholderRect = placeholder.getBoundingClientRect();
+            const bigCardRect = bigCard.getBoundingClientRect();
+
+            // Calculate the destination position
+            const destX = placeholderRect.left + placeholderRect.width / 2 - bigCardRect.width / 2;
+            const destY = placeholderRect.top + placeholderRect.height / 2 - bigCardRect.height / 2;
+
+            // Use GSAP timeline for better control
+            const tl = gsap.timeline();
+
+            // Extended display time before animation
+            tl.to(bigCard, {
+                duration: 1.5, // Extended duration to 1.5 seconds
+                opacity: 1,
+                ease: "none",
+            });
+
+            // Animation to placeholder
+            tl.to(bigCard, {
+                duration: 1,
+                x: destX - bigCardRect.left,
+                y: destY - bigCardRect.top,
+                width: placeholderRect.width,
+                height: placeholderRect.height,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    // Update the placeholder
+                    placeholder.style.backgroundImage = `url('https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/${cardName}.png')`;
+                    placeholder.classList.add('collected');
+                    bigCard.style.display = 'none';
+                    // Reset big card position
+                    gsap.set(bigCard, { clearProps: "all" });
+
+                    // Check if the card was already collected
+                    const alreadyCollected = collectedCards.some(c => c.suit === cardObj.suit && c.value === cardObj.value);
+
+                    if (alreadyCollected) {
+                        alert('This card already exists!');
+                    } else {
+                        collectedCards.push(cardObj);
+                        if (collectedCards.length === 52) {
+                            alert('Congratulations! You have collected all cards!');
+                        }
+                    }
+                }
+            }, "+=0.5"); // Add a slight delay before starting the animation
+        }
+
+        document.getElementById('random-card-btn').addEventListener('click', getRandomCard);
+
+        // Modal Switching Logic
+        var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+        var registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+
+        document.getElementById('showRegister').addEventListener('click', function (e) {
+            e.preventDefault();
+            loginModal.hide();
+            registerModal.show();
+        });
+
+        document.getElementById('showLogin').addEventListener('click', function (e) {
+            e.preventDefault();
+            registerModal.hide();
+            loginModal.show();
+        });
+
+        // Login Form Submission
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            // Implement login logic here
+            alert('Login functionality is not implemented yet.');
+            loginModal.hide();
+        });
+
+        // Register Form Submission
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            // Implement registration logic here
+            alert('Registration functionality is not implemented yet.');
+            registerModal.hide();
+        });
+    </script>
+</body>
+
+</html>
