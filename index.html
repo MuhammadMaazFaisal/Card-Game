@@ -89,7 +89,7 @@
 
         /* Left Screen */
         #left-screen {
-            height: calc(100vh - 56px);
+            height: calc(100vh - 250px);
             padding: 10px;
             overflow-y: hidden;
         }
@@ -98,7 +98,7 @@
         .card-grid {
             display: grid;
             grid-template-columns: repeat(13, var(--card-width));
-            grid-gap: 5px;
+            grid-gap: 10px;
             justify-content: center;
             align-items: center;
             height: 100%;
@@ -204,7 +204,7 @@
         @media (max-width: 768px) {
             .card-grid {
                 grid-template-columns: repeat(9, var(--card-width));
-                grid-gap: 5px;
+                grid-gap: 10px;
             }
 
             .btn-custom {
@@ -236,7 +236,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Left Screen -->
-            <div class="col-md-8" id="left-screen">
+            <div class="col-xl-8" id="left-screen">
                 <div class="card-grid">
                     <!-- 52 Card Placeholders -->
                     <script>
@@ -256,11 +256,11 @@
                 </div>
             </div>
             <!-- Separator -->
-            <div class="col-md-1 d-none d-md-block p-0">
+            <div class="col-xl-1 d-none d-xl-block p-0">
                 <div class="separator"></div>
             </div>
             <!-- Right Screen -->
-            <div class="col-md-3 d-flex flex-column align-items-center justify-content-center" id="right-screen">
+            <div class="col-xl-3 d-flex flex-column align-items-center justify-content-center" id="right-screen">
                 <button class="btn btn-custom" id="random-card-btn"><i class="fas fa-magic"></i> Draw Card</button>
                 <p class="mt-2">Remaining Free Cards: <span id="remaining-free">10</span></p>
                 <button class="btn btn-custom" id="buy-card-btn"><i class="fas fa-shopping-cart"></i> Buy Cards</button>
