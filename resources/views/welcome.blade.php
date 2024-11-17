@@ -283,16 +283,16 @@
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <i class="fas fa-gamepad me-2"></i>
-                <span>Card Game</span>
+                <span>WIN BIG</span>
             </a>
 
             <div class="mx-auto text-center">
-                <h1 class="display-5 text-primary mb-0">WIN BIG</h1>
                 <h2 class="text-warning mb-0">BILLION $ PRIZE FUND</h2>
                 <p class="lead mb-0">PUT THE CARDS IN THE CORRECT ORDER TO WIN</p>
             </div>
 
             <div class="d-flex">
+                <!-- Authentication Logic (Assuming you're using Laravel Blade syntax) -->
                 @if (Auth::check() && Auth::user()->userType == 1)
                     <div class="dropdown">
                         <a class="btn btn-outline-light dropdown-toggle" href="#" role="button"
@@ -325,21 +325,7 @@
             <!-- Left Screen -->
             <div class="col-xl-8 col-lg-8 col-md-12" id="left-screen">
                 <div class="card-grid">
-                    <!-- 52 Card Placeholders -->
-                    <script>
-                        const suits = ['clubs', 'diamonds', 'hearts', 'spades'];
-                        const values = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
-                        let cardIndex = 1;
-                        for (let suit of suits) {
-                            for (let value of values) {
-                                document.write(`
-                                    <div class="card-placeholder" id="placeholder-${value}-of-${suit}">
-                                    </div>
-                                `);
-                                cardIndex++;
-                            }
-                        }
-                    </script>
+                    <!-- Card Placeholders will be generated here -->
                 </div>
             </div>
             <!-- Right Screen -->
@@ -436,6 +422,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <!-- Custom Script -->
     <script>
+        // Authentication check (Assuming you're using Laravel Blade syntax)
         const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
         let remainingAttempts = {{ Auth::check() ? Auth::user()->remainingAttempts : 0 }};
         document.getElementById('remaining-attempts').innerText = remainingAttempts;
@@ -443,46 +430,274 @@
         const collectedCards = {!! json_encode($gameState->collected_cards ?? []) !!};
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        // Generate the cards on the right screen
+        // Define the hardcoded sequence of 52 cards (including duplicates)
+        const deckSequence = [
+            // First 10 cards as specified
+            {
+                value: 'ace',
+                suit: 'diamonds'
+            },
+            {
+                value: 'jack',
+                suit: 'diamonds'
+            },
+            {
+                value: '2',
+                suit: 'hearts'
+            },
+            {
+                value: '10',
+                suit: 'spades'
+            },
+            {
+                value: '8',
+                suit: 'spades'
+            },
+            {
+                value: '7',
+                suit: 'spades'
+            },
+            {
+                value: 'queen',
+                suit: 'clubs'
+            },
+            {
+                value: 'jack',
+                suit: 'spades'
+            },
+            {
+                value: '2',
+                suit: 'diamonds'
+            }, // Duplicate
+            {
+                value: 'queen',
+                suit: 'diamonds'
+            },
+            // Remaining cards to complete the deck (no duplicates)
+            // ... [Add the rest of the cards to complete 52 cards]
+            // For brevity, I will include the remaining cards here
+            {
+                value: 'king',
+                suit: 'diamonds'
+            },
+            {
+                value: '3',
+                suit: 'diamonds'
+            },
+            {
+                value: '4',
+                suit: 'diamonds'
+            },
+            {
+                value: '5',
+                suit: 'diamonds'
+            },
+            {
+                value: '6',
+                suit: 'diamonds'
+            },
+            {
+                value: '7',
+                suit: 'diamonds'
+            },
+            {
+                value: '8',
+                suit: 'diamonds'
+            },
+            {
+                value: '9',
+                suit: 'diamonds'
+            },
+            {
+                value: '10',
+                suit: 'diamonds'
+            },
+            {
+                value: 'king',
+                suit: 'clubs'
+            },
+            {
+                value: 'ace',
+                suit: 'clubs'
+            },
+            {
+                value: '2',
+                suit: 'clubs'
+            },
+            {
+                value: '3',
+                suit: 'clubs'
+            },
+            {
+                value: '4',
+                suit: 'clubs'
+            },
+            {
+                value: '5',
+                suit: 'clubs'
+            },
+            {
+                value: '6',
+                suit: 'clubs'
+            },
+            {
+                value: '7',
+                suit: 'clubs'
+            },
+            {
+                value: '8',
+                suit: 'clubs'
+            },
+            {
+                value: '9',
+                suit: 'clubs'
+            },
+            {
+                value: '10',
+                suit: 'clubs'
+            },
+            {
+                value: 'jack',
+                suit: 'clubs'
+            },
+            {
+                value: 'king',
+                suit: 'hearts'
+            },
+            {
+                value: 'ace',
+                suit: 'hearts'
+            },
+            {
+                value: '3',
+                suit: 'hearts'
+            },
+            {
+                value: '4',
+                suit: 'hearts'
+            },
+            {
+                value: '5',
+                suit: 'hearts'
+            },
+            {
+                value: '6',
+                suit: 'hearts'
+            },
+            {
+                value: '7',
+                suit: 'hearts'
+            },
+            {
+                value: '8',
+                suit: 'hearts'
+            },
+            {
+                value: '9',
+                suit: 'hearts'
+            },
+            {
+                value: '10',
+                suit: 'hearts'
+            },
+            {
+                value: 'jack',
+                suit: 'hearts'
+            },
+            {
+                value: 'queen',
+                suit: 'hearts'
+            },
+            {
+                value: 'king',
+                suit: 'spades'
+            },
+            {
+                value: 'ace',
+                suit: 'spades'
+            },
+            {
+                value: '2',
+                suit: 'spades'
+            },
+            {
+                value: '3',
+                suit: 'spades'
+            },
+            {
+                value: '4',
+                suit: 'spades'
+            },
+            {
+                value: '5',
+                suit: 'spades'
+            },
+            {
+                value: '6',
+                suit: 'spades'
+            },
+            {
+                value: '9',
+                suit: 'spades'
+            },
+            {
+                value: 'queen',
+                suit: 'spades'
+            },
+            {
+                value: 'king',
+                suit: 'hearts'
+            },
+        ];
+
+        // Generate the card placeholders using deckSequence
+        const cardGrid = document.querySelector('.card-grid');
+        deckSequence.forEach(card => {
+            const placeholderDiv = document.createElement('div');
+            placeholderDiv.classList.add('card-placeholder');
+            placeholderDiv.id = `placeholder-${card.value}-of-${card.suit}`;
+            cardGrid.appendChild(placeholderDiv);
+        });
+
+        // Generate the cards on the right screen in normal order, including duplicates if necessary
         const cardGridRight = document.querySelector('.card-grid-right');
+
+        // First, create a map to count how many times each card appears in the placeholders
+        const cardCounts = {};
+        deckSequence.forEach(card => {
+            const cardName = `${card.value}-of-${card.suit}`;
+            if (cardCounts[cardName]) {
+                cardCounts[cardName]++;
+            } else {
+                cardCounts[cardName] = 1;
+            }
+        });
+
+        // Now generate the cards on the right in normal order, including duplicates as needed
+        const suits = ['clubs', 'diamonds', 'hearts', 'spades'];
+        const values = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
+
         for (let suit of suits) {
             for (let value of values) {
                 const cardName = `${value}-of-${suit}`;
-                if (!collectedCards.includes(cardName)) {
-                    const cardDiv = document.createElement('div');
-                    cardDiv.classList.add('card', 'draggable-card');
-                    cardDiv.id = `card-${cardName}`;
-                    const imageName = `${value}_of_${suit}`;
-                    cardDiv.style.backgroundImage =
-                        `url('https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/${imageName}.png')`;
-                    cardDiv.draggable = true;
-                    cardGridRight.appendChild(cardDiv);
+                const count = cardCounts[cardName] || 0;
+
+                // Add the card as many times as it appears in the placeholders
+                for (let i = 0; i < count; i++) {
+                    if (!collectedCards.includes(cardName)) {
+                        const cardDiv = document.createElement('div');
+                        cardDiv.classList.add('card', 'draggable-card');
+                        cardDiv.id = `card-${cardName}-${i}`; // Include index to make IDs unique
+                        const imageName = `${value}_of_${suit}`;
+                        cardDiv.style.backgroundImage =
+                            `url('https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/${imageName}.png')`;
+                        cardDiv.draggable = true;
+                        cardDiv.dataset.cardName = cardName; // Store the card name for reference
+                        cardGridRight.appendChild(cardDiv);
+                    }
                 }
             }
         }
-
-        // Restore game state on page load
-        window.onload = function() {
-            // Restore collected cards
-            collectedCards.forEach(cardName => {
-                const placeholderId = `placeholder-${cardName}`;
-                const placeholderElement = document.getElementById(placeholderId);
-                if (placeholderElement) {
-                    const imageName = cardName.replace(/-/g, '_');
-                    placeholderElement.style.backgroundImage =
-                        `url('https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/${imageName}.png')`;
-                    placeholderElement.classList.add('collected');
-                }
-            });
-
-            // If attempts are exhausted, disable dragging
-            if (remainingAttempts <= 0) {
-                const remainingCards = document.querySelectorAll('.draggable-card');
-                remainingCards.forEach(card => {
-                    card.draggable = false;
-                });
-            }
-        };
 
         // Add drag event listeners to the cards
         const draggableCards = document.querySelectorAll('.draggable-card');
@@ -555,7 +770,7 @@
             const placeholderId = e.target.id;
 
             // Check if the card matches the placeholder
-            const cardName = cardId.replace('card-', '');
+            const cardName = cardElement.dataset.cardName;
             const placeholderName = placeholderId.replace('placeholder-', '');
 
             // Decrease remaining attempts
@@ -628,6 +843,35 @@
                 .catch(error => console.error('Error:', error));
         }
 
+        // Restore game state on page load
+        window.onload = function() {
+            // Restore collected cards
+            collectedCards.forEach(cardName => {
+                const placeholderId = `placeholder-${cardName}`;
+                const placeholderElement = document.getElementById(placeholderId);
+                if (placeholderElement) {
+                    const imageName = cardName.replace(/-/g, '_');
+                    placeholderElement.style.backgroundImage =
+                        `url('https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/${imageName}.png')`;
+                    placeholderElement.classList.add('collected');
+                }
+
+                // Remove the collected card(s) from the right screen
+                const cardElements = document.querySelectorAll(`.draggable-card[data-card-name='${cardName}']`);
+                cardElements.forEach(cardElement => {
+                    cardElement.parentNode.removeChild(cardElement);
+                });
+            });
+
+            // If attempts are exhausted, disable dragging
+            if (remainingAttempts <= 0) {
+                const remainingCards = document.querySelectorAll('.draggable-card');
+                remainingCards.forEach(card => {
+                    card.draggable = false;
+                });
+            }
+        };
+
         // Buy More Attempts
         document.getElementById('buy-card-btn').addEventListener('click', function() {
             if (!isAuthenticated) {
@@ -637,58 +881,7 @@
                 return;
             }
 
-            // Swal.fire({
-            //     title: 'Buy More Attempts',
-            //     text: 'Would you like to buy 10 more attempts for $1?',
-            //     icon: 'question',
-            //     showCancelButton: true,
-            //     confirmButtonText: 'Buy',
-            //     cancelButtonText: 'Cancel',
-            //     customClass: {
-            //         confirmButton: 'btn btn-custom',
-            //         cancelButton: 'btn btn-secondary'
-            //     },
-            //     buttonsStyling: false
-            // }).then((result) => {
-            //     if (result.isConfirmed) {
-            //         fetch('{{ route('game.buyAttempts') }}', {
-            //                 method: 'POST',
-            //                 headers: {
-            //                     'Content-Type': 'application/json',
-            //                     'X-CSRF-TOKEN': csrfToken,
-            //                     'Accept': 'application/json',
-            //                 },
-            //                 body: JSON.stringify({
-            //                     attempts: 10,
-            //                 }),
-            //             })
-            //             .then(response => response.json())
-            //             .then(data => {
-            //                 if (data.success) {
-            //                     remainingAttempts = data.remainingAttempts;
-            //                     document.getElementById('remaining-attempts').innerText =
-            //                         remainingAttempts;
-
-            //                     // Re-enable dragging for all cards
-            //                     const remainingCards = document.querySelectorAll('.draggable-card');
-            //                     remainingCards.forEach(card => {
-            //                         card.draggable = true;
-            //                     });
-
-            //                     Swal.fire({
-            //                         icon: 'success',
-            //                         title: 'Purchase Successful',
-            //                         text: 'You have 10 more attempts!',
-            //                     });
-            //                 } else {
-            //                     console.error('Failed to update remaining attempts.');
-            //                 }
-            //             })
-            //             .catch(error => console.error('Error:', error));
-            //     }
-            // });
-
-            // Fire Swal to shwo bank details of the admin, each detail should be in a new line, there should be a message to the user to make the payment to the admin to get the attempts
+            // Show bank details for payment
             Swal.fire({
                 title: 'Bank Details',
                 html: '<strong>Bank Name:</strong> Bank of America<br><strong>Account Number:</strong> 1234567890<br><strong>IFSC Code:</strong> ABCD123456',

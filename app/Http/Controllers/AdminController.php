@@ -9,7 +9,7 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        $users = User::where('userType', 1)->get();
+        $users = User::where('userType', 1)->with('gameState')->get();
 
         return view('dashboard', compact('users'));
     }

@@ -80,8 +80,8 @@
             background-color: #4f46e5;
         }
 
-         /* Success message styling */
-         .alert-success {
+        /* Success message styling */
+        .alert-success {
             background-color: #d1fae5;
             border-left: 4px solid #10b981;
             color: #065f46;
@@ -117,12 +117,15 @@
 
         /* Responsive styles */
         @media (max-width: 768px) {
-            .table-header, .table-row {
+
+            .table-header,
+            .table-row {
                 display: block;
                 text-align: left;
             }
 
-            .table-header th, .table-row td {
+            .table-header th,
+            .table-row td {
                 display: block;
                 padding: 10px 16px;
                 border-bottom: 1px solid #374151;
@@ -151,7 +154,8 @@
                 align-items: stretch;
             }
 
-            .action-form input[type="number"], .action-button {
+            .action-form input[type="number"],
+            .action-button {
                 width: 100%;
                 margin: 5px 0;
             }
@@ -161,18 +165,24 @@
     <div class="py-12">
         @if (session('success'))
             <div class="max-w-7xl mx-auto">
-                <div class="alert-success">
-                    <span class="alert-icon">✔</span>
-                    <p>{{ session('success') }}</p>
+                <div class="alert-success d-flex justify-between">
+                    <div class="">
+                        <span class="alert-icon">✔</span>
+                        <span>{{ session('success') }}</span>
+                    </div>
+                    <button class="close-button" onclick="this.parentElement.style.display='none';">✖</button>
                 </div>
             </div>
         @endif
 
         @if (session('error'))
             <div class="max-w-7xl mx-auto">
-                <div class="alert-error">
-                    <span class="alert-icon">✖</span>
-                    <p>{{ session('error') }}</p>
+                <div class="alert-error d-flex justify-between">
+                    <div class="">
+                        <span class="alert-icon">✖</span>
+                        <span>{{ session('error') }}</span>
+                    </div>
+                    <button class="close-button" onclick="this.parentElement.style.display='none';">✖</button>
                 </div>
             </div>
         @endif
@@ -181,7 +191,7 @@
             <div class="dashboard-container">
                 <h3 class="text-xl font-semibold mb-4">Manage Users</h3>
                 <p class="text-sm mb-6">Easily manage user attempts and actions from this dashboard.</p>
-                
+
                 <div class="overflow-x-auto">
                     <table class="w-full rounded-lg">
                         <thead>
@@ -189,6 +199,7 @@
                                 <th class="text-left">User ID</th>
                                 <th class="text-center">Name</th>
                                 <th class="text-center">Email</th>
+                                <th class="text-center">Cards Collected</th>
                                 <th class="text-center">Remaining Attempts</th>
                                 <th class="text-center">Actions</th>
                             </tr>
@@ -213,10 +224,14 @@
                                         <div class="text-sm">{{ $user->email }}</div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
+                                        <span class="badge">{{ count($user->gameState->collected_cards) }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
                                         <span class="badge">{{ $user->remainingAttempts }}</span>
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <form method="POST" action="{{ route('admin.increaseAttempts', $user->id) }}" class="action-form">
+                                        <form method="POST" action="{{ route('admin.increaseAttempts', $user->id) }}"
+                                            class="action-form">
                                             @csrf
                                             <input type="number" name="attempts" value="10" min="1">
                                             <button type="submit" class="action-button">
