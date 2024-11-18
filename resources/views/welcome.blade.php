@@ -420,6 +420,21 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Font Awesome JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    @if ($errors->any())
+        <script>
+            let errors = @json($errors->all());
+            errors.forEach(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: error,
+                    timer: 3000
+                });
+            });
+        </script>
+    @endif
+
+
     <!-- Custom Script -->
     <script>
         // Authentication check (Assuming you're using Laravel Blade syntax)
