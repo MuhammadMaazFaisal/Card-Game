@@ -223,9 +223,15 @@
                                     <td class="px-6 py-4 text-center">
                                         <div class="text-sm">{{ $user->email }}</div>
                                     </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="badge">{{ count($user->gameState->collected_cards) }}</span>
+                                    <td class="px-6 py-4 text-center"> 
+                                        @php
+                                            $correctCards = collect($user->gameState->collected_cards ?? [])->filter(function ($card) {
+                                                return $card['isCorrect'] ?? false; // Ensure the key exists and is true
+                                            });
+                                        @endphp
+                                        <span class="badge">{{ $correctCards->count() }}</span>
                                     </td>
+                                    
                                     <td class="px-6 py-4 text-center">
                                         <span class="badge">{{ $user->remainingAttempts }}</span>
                                     </td>

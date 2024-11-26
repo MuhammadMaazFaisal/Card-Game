@@ -488,9 +488,6 @@
                 value: 'queen',
                 suit: 'diamonds'
             },
-            // Remaining cards to complete the deck (no duplicates)
-            // ... [Add the rest of the cards to complete 52 cards]
-            // For brevity, I will include the remaining cards here
             {
                 value: 'king',
                 suit: 'diamonds'
@@ -772,6 +769,13 @@
         function dropCard(e) {
             e.preventDefault();
             e.target.classList.remove('dragover');
+
+            const cardId = e.dataTransfer.getData('text/plain');
+            const cardElement = document.getElementById(cardId);
+            const placeholderId = e.target.id;
+
+    
+            // Check if the placeholder already has a card
             if (e.target.classList.contains('collected')) {
                 Swal.fire({
                     icon: 'warning',
@@ -780,50 +784,39 @@
                 });
                 return;
             }
-            const cardId = e.dataTransfer.getData('text/plain');
-            const cardElement = document.getElementById(cardId);
-            const placeholderId = e.target.id;
 
-            // Check if the card matches the placeholder
+            // Allow the card to be placed regardless of correctness
+            e.target.style.backgroundImage = cardElement.style.backgroundImage;
+            e.target.classList.add('collected');
+
+            // Keep track of placements
             const cardName = cardElement.dataset.cardName;
             const placeholderName = placeholderId.replace('placeholder-', '');
+
+            // Add the card to the collected list (track placements)
+            collectedCards.push({
+                cardName: cardName,
+                placeholderName: placeholderName,
+                isCorrect: cardName === placeholderName, // Flag if the placement is correct
+            });
+
+            // Remove the card from the right screen
+            cardElement.parentNode.removeChild(cardElement);
 
             // Decrease remaining attempts
             remainingAttempts--;
             document.getElementById('remaining-attempts').innerText = remainingAttempts;
 
-            if (cardName === placeholderName) {
-                // Correct match
-                e.target.style.backgroundImage = cardElement.style.backgroundImage;
-                e.target.classList.add('collected');
+            // Update game state
+            updateGameState();
 
-                // Remove the card from the right screen
-                cardElement.parentNode.removeChild(cardElement);
-
-                // Add to collectedCards
-                collectedCards.push(cardName);
-
-                // Send AJAX request to update game state
-                updateGameState();
-
-                // Check if all cards are collected
-                if (document.querySelectorAll('.draggable-card').length === 0) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Congratulations!',
-                        text: 'You have collected all cards!',
-                    });
-                }
-            } else {
-                // Incorrect match
+            // Check if all cards are collected
+            if (document.querySelectorAll('.draggable-card').length === 0) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Incorrect Placement',
-                    text: 'That card does not belong here.',
+                    icon: 'success',
+                    title: 'Congratulations!',
+                    text: 'You have placed all the cards!',
                 });
-
-                // Update remainingAttempts in the database
-                updateGameState();
             }
 
             // Check if attempts are exhausted
@@ -833,8 +826,15 @@
                 remainingCards.forEach(card => {
                     card.draggable = false;
                 });
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Game Over',
+                    text: 'You have run out of attempts.',
+                });
             }
         }
+
 
         function updateGameState() {
             fetch('{{ route('game.update') }}', {
